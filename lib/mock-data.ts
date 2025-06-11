@@ -4,14 +4,14 @@ export const mockUsers: User[] = [
   {
     id: '1',
     name: 'Sarah Johnson',
-    email: 'sarah@hairco.com',
+    email: 'sarah@bk wool.com',
     role: 'director',
     avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400'
   },
   {
     id: '2',
     name: 'Marcus Williams',
-    email: 'marcus@hairco.com',
+    email: 'marcus@bk wool.com',
     role: 'manager',
     storeId: '1',
     avatar: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=400'
@@ -19,7 +19,7 @@ export const mockUsers: User[] = [
   {
     id: '3',
     name: 'Diana Chen',
-    email: 'diana@hairco.com',
+    email: 'diana@bk wool.com',
     role: 'manager',
     storeId: '2',
     avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400'
@@ -27,7 +27,7 @@ export const mockUsers: User[] = [
   {
     id: '4',
     name: 'James Rodriguez',
-    email: 'james@hairco.com',
+    email: 'james@bk wool.com',
     role: 'manager',
     storeId: '3',
     avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400'
@@ -42,7 +42,7 @@ export const mockStores: Store[] = [
     managerId: '2',
     managerName: 'Marcus Williams',
     phone: '(555) 123-4567',
-    email: 'downtown@hairco.com',
+    email: 'downtown@bk wool.com',
     createdAt: new Date('2023-01-15')
   },
   {
@@ -52,7 +52,7 @@ export const mockStores: Store[] = [
     managerId: '3',
     managerName: 'Diana Chen',
     phone: '(555) 234-5678',
-    email: 'westside@hairco.com',
+    email: 'westside@bk wool.com',
     createdAt: new Date('2023-02-20')
   },
   {
@@ -62,7 +62,7 @@ export const mockStores: Store[] = [
     managerId: '4',
     managerName: 'James Rodriguez',
     phone: '(555) 345-6789',
-    email: 'uptown@hairco.com',
+    email: 'uptown@bk wool.com',
     createdAt: new Date('2023-03-10')
   }
 ];

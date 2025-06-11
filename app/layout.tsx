@@ -6,7 +6,7 @@ import { AuthProvider } from '@/lib/auth-context';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'HairCo Inventory Management System',
+  title: 'BK WOOL Inventory Management System',
   description: 'Professional hair product inventory management system',
 };
 
