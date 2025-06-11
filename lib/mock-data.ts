@@ -11,7 +11,7 @@ export const mockUsers: User[] = [
   {
     id: '2',
     name: 'Marcus Williams',
-    email: 'marcus@bk wool.com',
+    email: 'marcus@bkwool.com',
     role: 'manager',
     storeId: '1',
     avatar: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=400'
@@ -19,7 +19,7 @@ export const mockUsers: User[] = [
   {
     id: '3',
     name: 'Diana Chen',
-    email: 'diana@bk wool.com',
+    email: 'diana@bkwool.com',
     role: 'manager',
     storeId: '2',
     avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400'
@@ -27,7 +27,7 @@ export const mockUsers: User[] = [
   {
     id: '4',
     name: 'James Rodriguez',
-    email: 'james@bk wool.com',
+    email: 'james@bkwool.com',
     role: 'manager',
     storeId: '3',
     avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400'

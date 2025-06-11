@@ -94,7 +94,7 @@ export function LoginForm() {
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <p className="text-sm font-medium text-gray-700 mb-2">Demo Accounts:</p>
             <div className="space-y-1 text-xs text-gray-600">
-              <p><strong>Director:</strong> bk wool</p>
+              <p><strong>Director:</strong> sarah@bkwool.com</p>
               <p><strong>Manager:</strong> marcus@bkwool.com</p>
               <p className="text-gray-500">Password: any text</p>
             </div>
