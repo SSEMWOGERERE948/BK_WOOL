@@ -4,7 +4,7 @@ export const mockUsers: User[] = [
   {
     id: '1',
     name: 'Sarah Johnson',
-    email: 'sarah@bk wool.com',
+    email: 'sarah@bkwool.com',
     role: 'director',
     avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400'
   },
