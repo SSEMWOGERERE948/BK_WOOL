@@ -1,102 +1,68 @@
-'use client';
+"use client"
 
-import { useAuth } from '@/lib/auth-context';
-import { redirect } from 'next/navigation';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Header } from '@/components/layout/header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockSales, mockProducts, mockStores, mockInventory } from '@/lib/mock-data';
-import { BarChart3, TrendingUp, TrendingDown, DollarSign, Package, ShoppingCart, Store, Target } from 'lucide-react';
-import { useState } from 'react';
+import type React from "react"
+import { useState } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-export default function AnalyticsPage() {
-  const { user } = useAuth();
-  const [timeRange, setTimeRange] = useState('month');
-  const [selectedStore, setSelectedStore] = useState('all');
+const mockStores = [
+  { id: "store1", name: "Downtown Store" },
+  { id: "store2", name: "Uptown Store" },
+  { id: "store3", name: "Midtown Store" },
+]
 
-  if (!user) {
-    redirect('/');
-  }
+const mockTopProducts = [
+  { product: { id: "prod1", name: "Awesome T-Shirt" }, quantity: 150, revenue: 7500, orders: 75 },
+  { product: { id: "prod2", name: "Cool Jeans" }, quantity: 120, revenue: 6000, orders: 60 },
+  { product: { id: "prod3", name: "Stylish Shoes" }, quantity: 100, revenue: 5000, orders: 50 },
+]
 
-  // Filter data based on user role
-  let filteredSales = mockSales;
-  let filteredInventory = mockInventory;
-  
-  if (user.role === 'manager' && user.storeId) {
-    filteredSales = mockSales.filter(sale => sale.storeId === user.storeId);
-    filteredInventory = mockInventory.filter(item => item.storeId === user.storeId);
-  }
+const mockInventoryInsights = [
+  { title: "Total Products", value: 350 },
+  { title: "Out of Stock", value: 25 },
+  { title: "Low Stock", value: 50 },
+]
 
-  if (selectedStore !== 'all' && user.role === 'director') {
-    filteredSales = filteredSales.filter(sale => sale.storeId === selectedStore);
-    filteredInventory = filteredInventory.filter(item => item.storeId === selectedStore);
-  }
+const mockPerformanceTrends = [
+  { title: "Total Sales", value: "$25,000" },
+  { title: "New Customers", value: 120 },
+  { title: "Returning Customers", value: 80 },
+  { title: "Average Order Value", value: "$125" },
+]
 
-  // Calculate analytics
-  const totalRevenue = filteredSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
-  const totalUnits = filteredSales.reduce((sum, sale) => sum + sale.quantity, 0);
-  const averageOrderValue = filteredSales.length > 0 ? totalRevenue / filteredSales.length : 0;
-  
-  // Product performance
-  const productSales = filteredSales.reduce((acc, sale) => {
-    const productId = sale.productId;
-    if (!acc[productId]) {
-      acc[productId] = {
-        product: sale.product,
-        quantity: 0,
-        revenue: 0,
-        orders: 0
-      };
-    }
-    acc[productId].quantity += sale.quantity;
-    acc[productId].revenue += sale.totalAmount;
-    acc[productId].orders += 1;
-    return acc;
-  }, {} as Record<string, any>);
+const user = {
+  role: "director", // Can be 'director' or 'store_manager'
+}
 
-  const topProducts = Object.values(productSales)
-    .sort((a: any, b: any) => b.revenue - a.revenue)
-    .slice(0, 5);
-
-  // Store performance (for directors)
-  const storePerformance = user.role === 'director' ? mockStores.map(store => {
-    const storeSales = mockSales.filter(sale => sale.storeId === store.id);
-    const storeRevenue = storeSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
-    const storeUnits = storeSales.reduce((sum, sale) => sum + sale.quantity, 0);
-    return {
-      store,
-      revenue: storeRevenue,
-      units: storeUnits,
-      orders: storeSales.length
-    };
-  }).sort((a, b) => b.revenue - a.revenue) : [];
-
-  // Inventory insights
-  const lowStockItems = filteredInventory.filter(item => item.quantity <= item.minStockLevel);
-  const overstockItems = filteredInventory.filter(item => item.quantity >= item.maxStockLevel * 0.9);
-  const totalInventoryValue = filteredInventory.reduce((sum, item) => sum + (item.quantity * item.product.costPrice), 0);
+const AnalyticsPage: React.FC = () => {
+  const [timeRange, setTimeRange] = useState("week")
+  const [selectedStore, setSelectedStore] = useState("all")
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar (Hidden on smaller screens) */}
+      <div className="hidden lg:flex lg:w-64 flex-shrink-0 bg-white border-r border-gray-200">
+        <div className="h-full px-4 py-6">
+          {/* Sidebar Content */}
+          <h3 className="text-lg font-semibold mb-4">Filters</h3>
+          {/* Add filter components here */}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="px-4 py-5 sm:px-6">
+            <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  {user.role === 'director' ? 'Business Analytics' : 'Store Analytics'}
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                  {user.role === "director" ? "Business Analytics" : "Store Analytics"}
                 </h2>
-                <p className="text-gray-600">
-                  Comprehensive insights into your business performance.
-                </p>
+                <p className="text-gray-600">Comprehensive insights into your business performance.</p>
               </div>
-              <div className="flex space-x-4">
+              <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <Select value={timeRange} onValueChange={setTimeRange}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-full sm:w-48">
                     <SelectValue placeholder="Select time range" />
                   </SelectTrigger>
                   <SelectContent>
@@ -106,9 +72,9 @@ export default function AnalyticsPage() {
                     <SelectItem value="year">This Year</SelectItem>
                   </SelectContent>
                 </Select>
-                {user.role === 'director' && (
+                {user.role === "director" && (
                   <Select value={selectedStore} onValueChange={setSelectedStore}>
-                    <SelectTrigger className="w-48">
+                    <SelectTrigger className="w-full sm:w-48">
                       <SelectValue placeholder="Select store" />
                     </SelectTrigger>
                     <SelectContent>
@@ -123,206 +89,101 @@ export default function AnalyticsPage() {
                 )}
               </div>
             </div>
+          </div>
+        </div>
 
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6">
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
-                  <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                    <TrendingUp className="w-3 h-3 text-green-600" />
-                    <span className="text-green-600">+12.5%</span>
-                    <span>from last period</span>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Units Sold</CardTitle>
-                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{totalUnits}</div>
-                  <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                    <TrendingUp className="w-3 h-3 text-green-600" />
-                    <span className="text-green-600">+8.2%</span>
-                    <span>from last period</span>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
-                  <Target className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">${averageOrderValue.toFixed(2)}</div>
-                  <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                    <TrendingUp className="w-3 h-3 text-green-600" />
-                    <span className="text-green-600">+3.8%</span>
-                    <span>from last period</span>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">${totalInventoryValue.toLocaleString()}</div>
-                  <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                    <TrendingDown className="w-3 h-3 text-red-600" />
-                    <span className="text-red-600">-2.1%</span>
-                    <span>from last period</span>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              <div className="bg-white shadow rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-800">Total Revenue</h3>
+                <p className="text-2xl font-bold text-gray-900">$50,000</p>
+              </div>
+              <div className="bg-white shadow rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-800">Orders</h3>
+                <p className="text-2xl font-bold text-gray-900">250</p>
+              </div>
+              <div className="bg-white shadow rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-800">Customers</h3>
+                <p className="text-2xl font-bold text-gray-900">180</p>
+              </div>
+              <div className="bg-white shadow rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-800">Conversion Rate</h3>
+                <p className="text-2xl font-bold text-gray-900">3.2%</p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Top Products */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="w-5 h-5" />
-                    <span>Top Performing Products</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {topProducts.map((item: any, index) => (
-                      <div key={item.product.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <span className="text-sm font-bold text-blue-600">#{index + 1}</span>
-                          </div>
-                          <div>
-                            <p className="font-medium">{item.product.name}</p>
-                            <p className="text-sm text-gray-500">{item.quantity} units sold</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold">${item.revenue.toLocaleString()}</p>
-                          <p className="text-sm text-gray-500">{item.orders} orders</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Charts and Data */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6">
+              <div className="bg-white shadow rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Sales Chart</h3>
+                {/* Add sales chart component here */}
+                <p>Sales chart will be displayed here.</p>
+              </div>
+              <div className="bg-white shadow rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Chart</h3>
+                {/* Add customer chart component here */}
+                <p>Customer chart will be displayed here.</p>
+              </div>
+            </div>
 
-              {/* Store Performance (Directors only) */}
-              {user.role === 'director' && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Store className="w-5 h-5" />
-                      <span>Store Performance</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {storePerformance.map((item, index) => (
-                        <div key={item.store.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                              <span className="text-sm font-bold text-green-600">#{index + 1}</span>
-                            </div>
-                            <div>
-                              <p className="font-medium">{item.store.name}</p>
-                              <p className="text-sm text-gray-500">{item.units} units sold</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-bold">${item.revenue.toLocaleString()}</p>
-                            <p className="text-sm text-gray-500">{item.orders} orders</p>
-                          </div>
-                        </div>
-                      ))}
+            {/* Top Products */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Top Selling Products</h3>
+              {mockTopProducts.map((item, index) => (
+                <div
+                  key={item.product.id}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-gray-50 rounded-lg space-y-2 sm:space-y-0"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <span className="text-sm font-bold text-blue-600">#{index + 1}</span>
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Inventory Insights */}
-              <Card className={user.role === 'manager' ? 'lg:col-span-2' : ''}>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Package className="w-5 h-5" />
-                    <span>Inventory Insights</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-red-50 p-4 rounded-lg">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span className="text-sm font-medium text-red-800">Low Stock</span>
-                      </div>
-                      <p className="text-2xl font-bold text-red-900">{lowStockItems.length}</p>
-                      <p className="text-xs text-red-700">items need restocking</p>
-                    </div>
-                    <div className="bg-yellow-50 p-4 rounded-lg">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <span className="text-sm font-medium text-yellow-800">Overstock</span>
-                      </div>
-                      <p className="text-2xl font-bold text-yellow-900">{overstockItems.length}</p>
-                      <p className="text-xs text-yellow-700">items overstocked</p>
-                    </div>
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-sm font-medium text-green-800">Optimal</span>
-                      </div>
-                      <p className="text-2xl font-bold text-green-900">
-                        {filteredInventory.length - lowStockItems.length - overstockItems.length}
-                      </p>
-                      <p className="text-xs text-green-700">items well-stocked</p>
+                    <div>
+                      <p className="font-medium">{item.product.name}</p>
+                      <p className="text-sm text-gray-500">{item.quantity} units sold</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="text-left sm:text-right">
+                    <p className="font-bold">${item.revenue.toLocaleString()}</p>
+                    <p className="text-sm text-gray-500">{item.orders} orders</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Inventory Insights */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Inventory Insights</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {mockInventoryInsights.map((item) => (
+                  <div key={item.title} className="bg-white shadow rounded-lg p-4">
+                    <h4 className="text-md font-medium text-gray-700">{item.title}</h4>
+                    <p className="text-xl font-bold text-gray-900">{item.value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Performance Trends */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Performance Trends</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">85%</div>
-                    <p className="text-sm text-gray-600">Inventory Turnover</p>
-                    <Badge variant="outline" className="mt-1">+5% vs last month</Badge>
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Performance Trends</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+                {mockPerformanceTrends.map((item) => (
+                  <div key={item.title} className="bg-white shadow rounded-lg p-4">
+                    <h4 className="text-md font-medium text-gray-700">{item.title}</h4>
+                    <p className="text-xl font-bold text-gray-900">{item.value}</p>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">92%</div>
-                    <p className="text-sm text-gray-600">Order Fulfillment</p>
-                    <Badge variant="outline" className="mt-1">+2% vs last month</Badge>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">78%</div>
-                    <p className="text-sm text-gray-600">Customer Satisfaction</p>
-                    <Badge variant="outline" className="mt-1">+8% vs last month</Badge>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">15%</div>
-                    <p className="text-sm text-gray-600">Profit Margin</p>
-                    <Badge variant="outline" className="mt-1">+1% vs last month</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+            </div>
           </div>
         </main>
       </div>
     </div>
-  );
+  )
 }
+
+export default AnalyticsPage

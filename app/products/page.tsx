@@ -1,240 +1,166 @@
-'use client';
+"use client"
 
-import { useAuth } from '@/lib/auth-context';
-import { redirect } from 'next/navigation';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Header } from '@/components/layout/header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockProducts } from '@/lib/mock-data';
-import { Package, Search, Plus, Calendar, MapPin, DollarSign } from 'lucide-react';
-import { useState } from 'react';
+import { useState } from "react"
+import { Search, Plus } from "lucide-react"
+import { SidebarLayout } from "@/components/layout/sidebar-layout"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+const user = {
+  role: "director", // or 'viewer'
+}
+
+const categories = ["shampoo", "conditioner", "styling", "treatment"]
+
+const products = [
+  {
+    id: 1,
+    name: "Hydrating Shampoo",
+    category: "shampoo",
+    price: 15.99,
+    imageUrl: "https://via.placeholder.com/150",
+  },
+  {
+    id: 2,
+    name: "Volumizing Conditioner",
+    category: "conditioner",
+    price: 14.5,
+    imageUrl: "https://via.placeholder.com/150",
+  },
+  {
+    id: 3,
+    name: "Texturizing Spray",
+    category: "styling",
+    price: 12.75,
+    imageUrl: "https://via.placeholder.com/150",
+  },
+  {
+    id: 4,
+    name: "Deep Repair Mask",
+    category: "treatment",
+    price: 18.0,
+    imageUrl: "https://via.placeholder.com/150",
+  },
+  {
+    id: 5,
+    name: "Smoothing Serum",
+    category: "styling",
+    price: 20.0,
+    imageUrl: "https://via.placeholder.com/150",
+  },
+  {
+    id: 6,
+    name: "Color Protect Shampoo",
+    category: "shampoo",
+    price: 16.5,
+    imageUrl: "https://via.placeholder.com/150",
+  },
+]
+
+const ProductStats = () => (
+  <>
+    <div className="border rounded-md p-4">
+      <h3 className="text-lg font-semibold text-gray-800">Total Products</h3>
+      <p className="text-2xl font-bold text-blue-600">120</p>
+    </div>
+    <div className="border rounded-md p-4">
+      <h3 className="text-lg font-semibold text-gray-800">Average Product Price</h3>
+      <p className="text-2xl font-bold text-green-600">$25.50</p>
+    </div>
+    <div className="border rounded-md p-4">
+      <h3 className="text-lg font-semibold text-gray-800">Most Popular Category</h3>
+      <p className="text-2xl font-bold text-purple-600">Shampoo</p>
+    </div>
+    <div className="border rounded-md p-4">
+      <h3 className="text-lg font-semibold text-gray-800">Out of Stock Items</h3>
+      <p className="text-2xl font-bold text-red-600">5</p>
+    </div>
+  </>
+)
 
 export default function ProductsPage() {
-  const { user } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all")
 
-  if (!user) {
-    redirect('/');
-  }
-
-  // Filter products
-  let filteredProducts = mockProducts;
-
-  if (searchTerm) {
-    filteredProducts = filteredProducts.filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.batchNumber.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
-
-  if (selectedCategory !== 'all') {
-    filteredProducts = filteredProducts.filter(product => product.category === selectedCategory);
-  }
-
-  const categories = Array.from(new Set(mockProducts.map(p => p.category)));
-
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      braids: 'bg-purple-100 text-purple-800',
-      wigs: 'bg-pink-100 text-pink-800',
-      extensions: 'bg-blue-100 text-blue-800',
-      tools: 'bg-green-100 text-green-800',
-      care: 'bg-orange-100 text-orange-800'
-    };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
+  const filteredProducts = products.filter((product) => {
+    const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const categoryMatch = selectedCategory === "all" || product.category === selectedCategory
+    return searchMatch && categoryMatch
+  })
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  Product Catalog
-                </h2>
-                <p className="text-gray-600">
-                  Manage your hair product inventory and specifications.
-                </p>
-              </div>
-              {user.role === 'director' && (
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Product
-                </Button>
+    <SidebarLayout>
+      <div className="space-y-6">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Product Catalog</h2>
+            <p className="text-gray-600">Manage your hair product inventory and specifications.</p>
+          </div>
+          {user.role === "director" && (
+            <Button className="w-full sm:w-auto">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Product
+            </Button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+          <ProductStats />
+        </div>
+
+        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {filteredProducts.map((product) => (
+            <div key={product.id} className="border rounded-md p-4">
+              <img
+                src={product.imageUrl || "/placeholder.svg"}
+                alt={product.name}
+                className="w-full h-40 object-cover rounded-md mb-2"
+              />
+              <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
+              <p className="text-gray-600">Category: {product.category}</p>
+              <p className="text-green-600 font-bold">${product.price.toFixed(2)}</p>
+              {user.role === "director" && (
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-2">
+                  <Button variant="outline" size="sm" className="flex-1">
+                    Edit Product
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1">
+                    View Details
+                  </Button>
+                </div>
               )}
             </div>
-
-            {/* Product Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{mockProducts.length}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Categories</CardTitle>
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{categories.length}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Avg Cost Price</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    ${(mockProducts.reduce((sum, p) => sum + p.costPrice, 0) / mockProducts.length).toFixed(2)}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Avg Selling Price</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    ${(mockProducts.reduce((sum, p) => sum + p.sellingPrice, 0) / mockProducts.length).toFixed(2)}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Filters */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center space-x-4">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder="Search products..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {categories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category.charAt(0).toUpperCase() + category.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <Card key={product.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{product.name}</CardTitle>
-                      <Badge className={getCategoryColor(product.category)}>
-                        {product.category}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="text-sm text-gray-600">
-                        <p><strong>Batch:</strong> {product.batchNumber}</p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Calendar className="w-3 h-3" />
-                          <span>Produced: {product.productionDate.toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <MapPin className="w-3 h-3" />
-                          <span>Location: {product.storageLocation}</span>
-                        </div>
-                      </div>
-
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm text-gray-600">Quantity Produced</span>
-                          <span className="text-lg font-bold">{product.quantityProduced}</span>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-sm text-gray-600">Cost Price</span>
-                          <p className="font-medium">${product.costPrice}</p>
-                        </div>
-                        <div>
-                          <span className="text-sm text-gray-600">Selling Price</span>
-                          <p className="font-medium text-green-600">${product.sellingPrice}</p>
-                        </div>
-                      </div>
-
-                      <div className="bg-green-50 p-2 rounded-lg">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-green-700">Profit Margin</span>
-                          <span className="font-medium text-green-800">
-                            ${(product.sellingPrice - product.costPrice).toFixed(2)} 
-                            ({(((product.sellingPrice - product.costPrice) / product.costPrice) * 100).toFixed(1)}%)
-                          </span>
-                        </div>
-                      </div>
-
-                      {product.description && (
-                        <p className="text-sm text-gray-600 italic">{product.description}</p>
-                      )}
-
-                      {user.role === 'director' && (
-                        <div className="flex space-x-2 pt-2">
-                          <Button variant="outline" size="sm" className="flex-1">
-                            Edit Product
-                          </Button>
-                          <Button variant="outline" size="sm" className="flex-1">
-                            View Details
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {filteredProducts.length === 0 && (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No products found matching your criteria.</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </main>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    </SidebarLayout>
+  )
 }
